@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Quiz Result</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="result-container">
+      <h1>🎉 Quiz Completed!</h1>
+
+      <p>Your Final Score:</p>
+      <h2 id="final-score">0</h2>
+
+      <p id="message"></p>
+
+      <h3>REVIEW</h3>
+      <div id="reviewContainer"></div>
+
+      <button id="play-again">Play Again</button>
+    </div>
+
+    <script>
+      // Retrieve final score and user answers
+      const finalScore = localStorage.getItem("finalScore") || 0;
+      const userAnswers = JSON.parse(
+        localStorage.getItem("userAnswers") || "[]"
+      );
+
+      const scoreDisplay = document.getElementById("final-score");
+      const messageEl = document.getElementById("message");
+      const reviewContainer = document.getElementById("reviewContainer");
+      const playAgainBtn = document.getElementById("play-again");
+
+      scoreDisplay.textContent = finalScore;
+
+      // Comment based on score
+      if (finalScore >= 90) {
+        messageEl.textContent = "🌟 Outstanding! You’re a genius!";
+      } else if (finalScore >= 70) {
+        messageEl.textContent = "💪 Great job! You really know your stuff!";
+      } else if (finalScore >= 40) {
+        messageEl.textContent =
+          "🙂 Not bad! A little more practice and you'll ace it!";
+      } else {
+        messageEl.textContent = "😅 Don't worry, you’ll do better next time!";
+      }
+
+      // Show review of all questions
+      if (userAnswers.length > 0) {
+        userAnswers.forEach((item, index) => {
+          const div = document.createElement("div");
+          div.classList.add("review-item");
+          const correct = item.selected === item.correct ? "correct" : "wrong";
+
+          div.innerHTML = `
+  <h4>Q${index + 1}: ${escapeHTML(item.question)}</h4>
+  <p><strong>Your Answer:</strong> <span class="${correct}">${escapeHTML(
+            item.selected
+          )}</span></p>
+  <p><strong>Correct Answer:</strong> <span class="correct">${escapeHTML(
+    item.correct
+  )}</span></p>
+  <hr>
+`;
+
+          reviewContainer.appendChild(div);
+        });
+      }
+
+      // Play again button
+      playAgainBtn.addEventListener("click", () => {
+        localStorage.removeItem("finalScore");
+        localStorage.removeItem("userAnswers");
+        window.location.href = "index.html";
+      });
+
+      function escapeHTML(text) {
+        const div = document.createElement("div");
+        div.textContent = text;
+        return div.innerHTML;
+      }
+    </script>
+  </body>
+</html>
